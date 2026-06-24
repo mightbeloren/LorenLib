@@ -4,10 +4,12 @@
 #ifndef ARENA
 #define ARENA
 
+#define ALIGN_UP(currentOff) (((currentOff)+7)/8)*8 //aligning the current offset to next 8byte address in memory
+
 typedef struct {
-   size_t capacity;
-   char* data;
-   size_t offset;
+    size_t capacity;
+    char* data;
+    size_t offset;
 }arena;
 
 arena* arena_new(size_t size){
@@ -28,8 +30,9 @@ arena* arena_new(size_t size){
 }
 
 void* arena_alloc(arena* a,size_t size){
+    a->offset=ALIGN_UP(a->offset);
     if(a->offset+size > a->capacity){
-        printf("arena memory exceeded");
+        printf("arena memory full");
         return NULL;
     }
     void* allocation=a->data+a->offset;
